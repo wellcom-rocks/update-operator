@@ -1,32 +1,23 @@
----
+# permissions for end users to view imageversions.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: manager-role
+  labels:
+    app.kubernetes.io/name: update-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: imageversion-viewer-role
 rules:
 - apiGroups:
   - update.wellcom.rocks
   resources:
   - imageversions
   verbs:
-  - create
-  - delete
   - get
   - list
-  - patch
-  - update
   - watch
-- apiGroups:
-  - update.wellcom.rocks
-  resources:
-  - imageversions/finalizers
-  verbs:
-  - update
 - apiGroups:
   - update.wellcom.rocks
   resources:
   - imageversions/status
   verbs:
   - get
-  - patch
-  - update

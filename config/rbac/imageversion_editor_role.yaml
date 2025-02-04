@@ -1,8 +1,11 @@
----
+# permissions for end users to edit imageversions.
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: manager-role
+  labels:
+    app.kubernetes.io/name: update-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: imageversion-editor-role
 rules:
 - apiGroups:
   - update.wellcom.rocks
@@ -19,14 +22,6 @@ rules:
 - apiGroups:
   - update.wellcom.rocks
   resources:
-  - imageversions/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - update.wellcom.rocks
-  resources:
   - imageversions/status
   verbs:
   - get
-  - patch
-  - update

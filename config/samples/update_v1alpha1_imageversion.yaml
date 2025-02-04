@@ -1,0 +1,9 @@
+apiVersion: update.wellcom.rocks/v1alpha1
+kind: ImageVersion
+metadata:
+  labels:
+    app.kubernetes.io/name: update-operator
+    app.kubernetes.io/managed-by: kustomize
+  name: imageversion-sample
+spec:
+  # TODO(user): Add fields here
