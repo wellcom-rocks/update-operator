@@ -26,8 +26,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log"
 )
 
-// UpdateReconciler reconciles a Update object
-type UpdateReconciler struct {
+// UpdateDeploymentReconciler reconciles a Update object
+type UpdateDeploymentReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
@@ -41,17 +41,17 @@ type UpdateReconciler struct {
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.19.0/pkg/reconcile
-func (r *UpdateReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *UpdateDeploymentReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx)
 
-	deployments := r.List(ctx, &appsv1.DeploymentList{})
-	logger.Info("Getting deployments", "Deployment", deployments)
+	err := r.List(ctx, &appsv1.DeploymentList{})
+	logger.Info("Getting Deployments", "Error", err)
 
 	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *UpdateReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *UpdateDeploymentReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&appsv1.Deployment{}).
 		Complete(r)

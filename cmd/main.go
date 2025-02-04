@@ -151,11 +151,18 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "ImageVersion")
 		os.Exit(1)
 	}
-	if err = (&controller.UpdateReconciler{
+	if err = (&controller.UpdateDeploymentReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "Update")
+		setupLog.Error(err, "unable to create controller", "controller", "UpdateDeployment")
+		os.Exit(1)
+	}
+	if err = (&controller.UpdateDaemonSetReconciler{
+		Client: mgr.GetClient(),
+		Scheme: mgr.GetScheme(),
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "UpdateDaemonSet")
 		os.Exit(1)
 	}
 	// +kubebuilder:scaffold:builder

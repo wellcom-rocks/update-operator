@@ -46,8 +46,12 @@ type ImageVersion struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	Spec   ImageVersionSpec   `json:"spec,omitempty"`
-	Status ImageVersionStatus `json:"status,omitempty"`
+	Spec             ImageVersionSpec   `json:"spec,omitempty"`
+	Status           ImageVersionStatus `json:"status,omitempty"`
+	Name             string             `json:"name,omitempty"`
+	DeploymentType   string             `json:"deploymentType,omitempty"`
+	InstalledVersion string             `json:"installedVersion,omitempty"`
+	NewVersion       string             `json:"newVersion,omitempty"`
 }
 
 // +kubebuilder:object:root=true
