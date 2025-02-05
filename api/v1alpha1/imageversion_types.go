@@ -50,6 +50,7 @@ type ImageVersion struct {
 	Status           ImageVersionStatus `json:"status,omitempty"`
 	Name             string             `json:"name,omitempty"`
 	DeploymentType   string             `json:"deploymentType,omitempty"`
+	ContainerName    string             `json:"containerName,omitempty"`
 	InstalledVersion string             `json:"installedVersion,omitempty"`
 	NewVersion       string             `json:"newVersion,omitempty"`
 }

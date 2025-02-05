@@ -19,8 +19,11 @@ package controller
 import (
 	"context"
 
+	updatev1alpha1 "github.com/wellcom-rocks/update-operator/api/v1alpha1"
 	appsv1 "k8s.io/api/apps/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
@@ -44,8 +47,51 @@ type UpdateDeploymentReconciler struct {
 func (r *UpdateDeploymentReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	logger := log.FromContext(ctx)
 
-	err := r.List(ctx, &appsv1.DeploymentList{})
-	logger.Info("Getting Deployments", "Error", err)
+	deployment := &appsv1.Deployment{}
+	err := r.Get(ctx, req.NamespacedName, deployment)
+	if err != nil {
+		logger.Error(err, "unable to fetch Deployment")
+		return ctrl.Result{}, err
+	}
+
+	logger.Info("Getting Deployment")
+
+	containers := deployment.Spec.Template.Spec.Containers
+	for _, container := range containers {
+		logger.Info("Found container")
+
+		imageVersion := &updatev1alpha1.ImageVersion{}
+		imageVersion.ObjectMeta.Name = deployment.Name + "-" + container.Name
+		imageVersion.Name = deployment.Name
+		imageVersion.Namespace = req.Namespace
+		imageVersion.DeploymentType = "deployment"
+		imageVersion.ContainerName = container.Name
+		imageVersion.InstalledVersion = container.Image
+
+		foundImageVersion := &updatev1alpha1.ImageVersion{}
+		findImageVersion := types.NamespacedName{
+			Name:      deployment.Name + "-" + container.Name,
+			Namespace: req.Namespace,
+		}
+
+		err := r.Client.Get(ctx, findImageVersion, foundImageVersion)
+		if err != nil && errors.IsNotFound(err) {
+			err := r.Create(ctx, imageVersion)
+			if err != nil {
+				logger.Error(err, "unable to create ImageVersion")
+				return ctrl.Result{}, err
+			}
+		}
+
+		imageVersion.SetResourceVersion(foundImageVersion.GetResourceVersion())
+		err = r.Update(ctx, imageVersion)
+		if err != nil {
+			logger.Error(err, "unable to update ImageVersion")
+			return ctrl.Result{}, err
+		}
+
+		logger.Info("Created ImageVersion", "ImageVersion", *imageVersion)
+	}
 
 	return ctrl.Result{}, nil
 }

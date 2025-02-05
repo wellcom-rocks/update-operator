@@ -26,6 +26,8 @@ spec:
               may reject unrecognized values.
               More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
+          containerName:
+            type: string
           deploymentType:
             type: string
           installedVersion:
